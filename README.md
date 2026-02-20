@@ -49,7 +49,11 @@ rate_maps = RateMapTable(
     name="place_rate_maps",
     description="2D spatial rate maps, 2cm bins, gaussian-smoothed",
     bin_edges_dim0=np.linspace(0, 100, num_bins_x + 1),  # x bin edges in cm
+    dim0_label="x_position",
+    dim0_unit="cm",
     bin_edges_dim1=np.linspace(0, 100, num_bins_y + 1),  # y bin edges in cm
+    dim1_label="y_position",
+    dim1_unit="cm",
     smoothing_kernel="gaussian",
     smoothing_kernel_width=3.0,  # in cm (same units as bin edges)
     units=DynamicTableRegion(
@@ -95,6 +99,8 @@ hd_maps = RateMapTable(
     name="hd_tuning_curves",
     description="Head direction tuning curves, 6-degree bins",
     bin_edges_dim0=np.linspace(0, 2 * np.pi, num_bins + 1),  # radians
+    dim0_label="head_direction",
+    dim0_unit="radians",
     units=DynamicTableRegion(
         name="units",
         data=list(range(num_units)),
@@ -154,6 +160,10 @@ right_trials = RateMapTable(
 | `unit_of_measurement` | text (fixed: "Hz") | Yes | Unit for rate values |
 | `smoothing_kernel` | text | No | Smoothing kernel type (e.g., "gaussian") |
 | `smoothing_kernel_width` | float64 | No | Kernel width, in same units as bin edges |
+| `dim0_label` | text | Yes | Label for the first dimension (e.g., "x_position") |
+| `dim0_unit` | text | Yes | Unit of measurement for the first dimension (e.g., "cm") |
+| `dim1_label` | text | No | Label for the second dimension (2D only) |
+| `dim1_unit` | text | No | Unit of measurement for the second dimension (2D only) |
 | `bin_edges_dim0` | float64 array | Yes | Bin edges along first dimension |
 | `bin_edges_dim1` | float64 array | No | Bin edges along second dimension (2D only) |
 | `units` | DynamicTableRegion | Yes | Reference to Units table |

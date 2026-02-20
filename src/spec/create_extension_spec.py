@@ -46,6 +46,28 @@ def main():
                 doc="Unit for rate map values (always Hz)",
             ),
             NWBAttributeSpec(
+                name="dim0_label",
+                dtype="text",
+                doc="Label for the first dimension (e.g., 'x_position', 'head_direction')",
+            ),
+            NWBAttributeSpec(
+                name="dim0_unit",
+                dtype="text",
+                doc="Unit of measurement for the first dimension (e.g., 'cm', 'radians')",
+            ),
+            NWBAttributeSpec(
+                name="dim1_label",
+                dtype="text",
+                doc="Label for the second dimension (e.g., 'y_position'). Only present for 2D rate maps.",
+                required=False,
+            ),
+            NWBAttributeSpec(
+                name="dim1_unit",
+                dtype="text",
+                doc="Unit of measurement for the second dimension (e.g., 'cm'). Only present for 2D rate maps.",
+                required=False,
+            ),
+            NWBAttributeSpec(
                 name="smoothing_kernel",
                 dtype="text",
                 doc="Type of smoothing kernel applied (e.g., 'gaussian', 'box')",

@@ -19,6 +19,10 @@ class RateMapTable(DynamicTable):
         "bin_edges_dim1",
         "smoothing_kernel",
         "smoothing_kernel_width",
+        "dim0_label",
+        "dim0_unit",
+        "dim1_label",
+        "dim1_unit",
         {"name": "source_timeseries", "required_name": "source_timeseries"},
         {"name": "time_support", "required_name": "time_support"},
     )
@@ -45,9 +49,33 @@ class RateMapTable(DynamicTable):
             "default": None,
         },
         {
+            "name": "dim0_label",
+            "type": str,
+            "doc": "Label for the first dimension (e.g., 'x_position', 'head_direction')",
+            "default": None,
+        },
+        {
+            "name": "dim0_unit",
+            "type": str,
+            "doc": "Unit of measurement for the first dimension (e.g., 'cm', 'radians')",
+            "default": None,
+        },
+        {
             "name": "bin_edges_dim1",
             "type": "array_data",
             "doc": "Bin edges along the second dimension (for 2D maps)",
+            "default": None,
+        },
+        {
+            "name": "dim1_label",
+            "type": str,
+            "doc": "Label for the second dimension (e.g., 'y_position')",
+            "default": None,
+        },
+        {
+            "name": "dim1_unit",
+            "type": str,
+            "doc": "Unit of measurement for the second dimension (e.g., 'cm')",
             "default": None,
         },
         {
@@ -107,7 +135,8 @@ class RateMapTable(DynamicTable):
         allow_extra=True,
     )
     def __init__(self, **kwargs):
-        bin_edges_dim0, bin_edges_dim1 = popargs("bin_edges_dim0", "bin_edges_dim1", kwargs)
+        bin_edges_dim0, dim0_label, dim0_unit = popargs("bin_edges_dim0", "dim0_label", "dim0_unit", kwargs)
+        bin_edges_dim1, dim1_label, dim1_unit = popargs("bin_edges_dim1", "dim1_label", "dim1_unit", kwargs)
         smoothing_kernel, smoothing_kernel_width = popargs(
             "smoothing_kernel", "smoothing_kernel_width", kwargs
         )
@@ -141,7 +170,11 @@ class RateMapTable(DynamicTable):
             self.spike_count_map = None
 
         self.bin_edges_dim0 = bin_edges_dim0
+        self.dim0_label = dim0_label
+        self.dim0_unit = dim0_unit
         self.bin_edges_dim1 = bin_edges_dim1
+        self.dim1_label = dim1_label
+        self.dim1_unit = dim1_unit
         self.smoothing_kernel = smoothing_kernel
         self.smoothing_kernel_width = smoothing_kernel_width
         self.source_timeseries = source_timeseries

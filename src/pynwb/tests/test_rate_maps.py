@@ -57,7 +57,11 @@ def _make_rate_map_table_2d(nwbfile, name="place_rate_maps"):
         name=name,
         description="2D spatial rate maps, 5cm bins, gaussian-smoothed",
         bin_edges_dim0=np.linspace(0, 50, num_bins_x + 1),
+        dim0_label="x_position",
+        dim0_unit="cm",
         bin_edges_dim1=np.linspace(0, 60, num_bins_y + 1),
+        dim1_label="y_position",
+        dim1_unit="cm",
         units=units_region,
         rate_map=rate_map_data,
         occupancy_map=occupancy_data,
@@ -88,6 +92,8 @@ def _make_rate_map_table_1d(nwbfile, name="hd_tuning_curves"):
         name=name,
         description="Head direction tuning curves, 6-degree bins",
         bin_edges_dim0=np.linspace(0, 2 * np.pi, num_bins + 1),
+        dim0_label="head_direction",
+        dim0_unit="radians",
         units=units_region,
         rate_map=rate_map_data,
     )
@@ -106,6 +112,10 @@ class TestRateMapTableConstructor(TestCase):
         assert len(table) == 3
         assert table.smoothing_kernel == "gaussian"
         assert table.smoothing_kernel_width == 3.0
+        assert table.dim0_label == "x_position"
+        assert table.dim0_unit == "cm"
+        assert table.dim1_label == "y_position"
+        assert table.dim1_unit == "cm"
         assert_array_equal(table.bin_edges_dim0, np.linspace(0, 50, 11))
         assert_array_equal(table.bin_edges_dim1, np.linspace(0, 60, 13))
 
@@ -116,7 +126,11 @@ class TestRateMapTableConstructor(TestCase):
 
         assert table.name == "hd_tuning_curves"
         assert len(table) == 3
+        assert table.dim0_label == "head_direction"
+        assert table.dim0_unit == "radians"
         assert table.bin_edges_dim1 is None
+        assert table.dim1_label is None
+        assert table.dim1_unit is None
 
     def test_unit_of_measurement_is_hz(self):
         """Test that unit_of_measurement is always Hz."""
@@ -148,6 +162,10 @@ class TestRateMapTableRoundTrip2D(TestCase):
             assert read_table.unit_of_measurement == "Hz"
             assert read_table.smoothing_kernel == "gaussian"
             assert read_table.smoothing_kernel_width == 3.0
+            assert read_table.dim0_label == "x_position"
+            assert read_table.dim0_unit == "cm"
+            assert read_table.dim1_label == "y_position"
+            assert read_table.dim1_unit == "cm"
             assert_array_equal(read_table.bin_edges_dim0[:], table.bin_edges_dim0)
             assert_array_equal(read_table.bin_edges_dim1[:], table.bin_edges_dim1)
             assert_array_equal(read_table["rate_map"][0], table["rate_map"][0])
@@ -241,7 +259,11 @@ class TestRateMapTableRoundTrip1D(TestCase):
             assert isinstance(read_table, RateMapTable)
             assert len(read_table) == 3
             assert read_table.unit_of_measurement == "Hz"
+            assert read_table.dim0_label == "head_direction"
+            assert read_table.dim0_unit == "radians"
             assert read_table.bin_edges_dim1 is None
+            assert read_table.dim1_label is None
+            assert read_table.dim1_unit is None
             assert_array_equal(read_table.bin_edges_dim0[:], table.bin_edges_dim0)
             assert_array_equal(read_table["rate_map"][0], table["rate_map"][0])
 
