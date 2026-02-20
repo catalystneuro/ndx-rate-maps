@@ -149,6 +149,21 @@ class RateMapTable(DynamicTable):
         # During read, columns is already populated by the ObjectMapper
         columns = kwargs.get("columns")
         if columns is None and rate_map is not None:
+            # Validate map dimensionality matches bin_edges
+            expected_ndim = 3 if bin_edges_dim1 is not None else 2
+            dim_label = "2D" if bin_edges_dim1 is not None else "1D"
+            for map_name, map_data in [
+                ("rate_map", rate_map),
+                ("occupancy_map", occupancy_map),
+                ("spike_count_map", spike_count_map),
+            ]:
+                if map_data is not None and map_data.data.ndim != expected_ndim:
+                    raise ValueError(
+                        f"{map_name} data has {map_data.data.ndim - 1}D maps but "
+                        f"bin_edges specify {dim_label}. Expected {map_name}.data.ndim "
+                        f"== {expected_ndim}, got {map_data.data.ndim}."
+                    )
+
             columns = []
             if units is not None:
                 columns.append(units)

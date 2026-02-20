@@ -139,6 +139,80 @@ class TestRateMapTableConstructor(TestCase):
         assert table.unit_of_measurement == "Hz"
 
 
+class TestRateMapTableValidation(TestCase):
+    """Test RateMapTable dimensionality validation."""
+
+    def test_2d_rate_map_with_1d_bin_edges_raises(self):
+        """Providing 2D rate maps without bin_edges_dim1 should raise."""
+        nwbfile = _make_nwbfile()
+        with self.assertRaises(ValueError):
+            RateMapTable(
+                name="bad",
+                description="bad",
+                bin_edges_dim0=np.linspace(0, 50, 11),
+                dim0_label="x_position",
+                dim0_unit="cm",
+                units=DynamicTableRegion(
+                    name="units", data=[0, 1, 2],
+                    description="units", table=nwbfile.units,
+                ),
+                rate_map=VectorData(
+                    name="rate_map", description="rate map",
+                    data=np.random.rand(3, 10, 12),  # 2D maps
+                ),
+            )
+
+    def test_1d_rate_map_with_2d_bin_edges_raises(self):
+        """Providing 1D rate maps with bin_edges_dim1 should raise."""
+        nwbfile = _make_nwbfile()
+        with self.assertRaises(ValueError):
+            RateMapTable(
+                name="bad",
+                description="bad",
+                bin_edges_dim0=np.linspace(0, 50, 11),
+                dim0_label="x_position",
+                dim0_unit="cm",
+                bin_edges_dim1=np.linspace(0, 60, 13),
+                dim1_label="y_position",
+                dim1_unit="cm",
+                units=DynamicTableRegion(
+                    name="units", data=[0, 1, 2],
+                    description="units", table=nwbfile.units,
+                ),
+                rate_map=VectorData(
+                    name="rate_map", description="rate map",
+                    data=np.random.rand(3, 10),  # 1D maps
+                ),
+            )
+
+    def test_2d_occupancy_map_mismatch_raises(self):
+        """Providing 1D occupancy_map with 2D bin_edges should raise."""
+        nwbfile = _make_nwbfile()
+        with self.assertRaises(ValueError):
+            RateMapTable(
+                name="bad",
+                description="bad",
+                bin_edges_dim0=np.linspace(0, 50, 11),
+                dim0_label="x_position",
+                dim0_unit="cm",
+                bin_edges_dim1=np.linspace(0, 60, 13),
+                dim1_label="y_position",
+                dim1_unit="cm",
+                units=DynamicTableRegion(
+                    name="units", data=[0, 1, 2],
+                    description="units", table=nwbfile.units,
+                ),
+                rate_map=VectorData(
+                    name="rate_map", description="rate map",
+                    data=np.random.rand(3, 10, 12),
+                ),
+                occupancy_map=VectorData(
+                    name="occupancy_map", description="occupancy",
+                    data=np.random.rand(3, 10),  # wrong: 1D
+                ),
+            )
+
+
 class TestRateMapTableRoundTrip2D(TestCase):
     """Test round-trip for 2D RateMapTable."""
 
