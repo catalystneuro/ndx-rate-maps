@@ -1,5 +1,5 @@
 from importlib.resources import files
-from pynwb import load_namespaces, get_class
+from pynwb import load_namespaces
 
 # Get path to the namespace.yaml file with the expected location when installed not in editable mode
 __location_of_this_file = files(__name__)
@@ -9,19 +9,14 @@ __spec_path = __location_of_this_file / "spec" / "ndx-rate-maps.namespace.yaml"
 if not __spec_path.exists():
     __spec_path = __location_of_this_file.parent.parent.parent / "spec" / "ndx-rate-maps.namespace.yaml"
 
-# Load the namespace
+# Load the namespace — MUST happen before @register_class imports
 load_namespaces(str(__spec_path))
 
-# TODO: Define your classes here to make them accessible at the package level.
-# Either have PyNWB generate a class from the spec using `get_class` as shown
-# below or write a custom class and register it using the class decorator
-# `@register_class("TetrodeSeries", "ndx-rate-maps")`
-TetrodeSeries = get_class("TetrodeSeries", "ndx-rate-maps")
+from .rate_map_table import RateMapTable  # noqa: E402, F401
 
-# TODO: Add all classes to __all__ to make them accessible at the package level
 __all__ = [
-    "TetrodeSeries",
+    "RateMapTable",
 ]
 
 # Remove these functions/modules from the package
-del load_namespaces, get_class, files, __location_of_this_file, __spec_path
+del load_namespaces, files, __location_of_this_file, __spec_path
