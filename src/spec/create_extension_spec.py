@@ -28,6 +28,7 @@ def main():
     ns_builder.include_type("DynamicTableRegion", namespace="hdmf-common")
     ns_builder.include_type("VectorData", namespace="hdmf-common")
     ns_builder.include_type("TimeSeries", namespace="core")
+    ns_builder.include_type("TimeIntervals", namespace="core")
 
     rate_map_table = NWBGroupSpec(
         neurodata_type_def="RateMapTable",
@@ -112,6 +113,15 @@ def main():
                 name="source_timeseries",
                 target_type="TimeSeries",
                 doc="Source behavioral timeseries (e.g., position data)",
+                quantity="?",
+            ),
+            NWBLinkSpec(
+                name="time_support",
+                target_type="TimeIntervals",
+                doc=(
+                    "Time intervals over which these rate maps were computed "
+                    "(e.g., trials, epochs, or custom intervals)"
+                ),
                 quantity="?",
             ),
         ],

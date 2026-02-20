@@ -5,6 +5,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from pynwb import NWBFile, NWBHDF5IO
 from pynwb.behavior import Position, SpatialSeries
+from pynwb.epoch import TimeIntervals
 from pynwb.testing import TestCase
 from hdmf.common import DynamicTableRegion, VectorData
 
@@ -187,6 +188,36 @@ class TestRateMapTableRoundTrip2D(TestCase):
 
         import os
         os.remove("test_2d_ts.nwb")
+
+    def test_roundtrip_2d_with_time_support(self):
+        """Write and read back with a time_support link."""
+        nwbfile = _make_nwbfile()
+        table = _make_rate_map_table_2d(nwbfile)
+
+        # Create time intervals
+        time_support = TimeIntervals(name="time_support", description="run epochs")
+        time_support.add_interval(start_time=0.0, stop_time=5.0)
+        time_support.add_interval(start_time=10.0, stop_time=15.0)
+
+        module = nwbfile.create_processing_module("behavior", "Behavioral data")
+        module.add(time_support)
+
+        table.time_support = time_support
+        module.add(table)
+
+        with NWBHDF5IO("test_2d_ts_support.nwb", "w") as io:
+            io.write(nwbfile)
+
+        with NWBHDF5IO("test_2d_ts_support.nwb", "r") as io:
+            read_nwb = io.read()
+            read_table = read_nwb.processing["behavior"]["place_rate_maps"]
+            assert read_table.time_support is not None
+            assert len(read_table.time_support) == 2
+            assert read_table.time_support["start_time"][0] == 0.0
+            assert read_table.time_support["stop_time"][1] == 15.0
+
+        import os
+        os.remove("test_2d_ts_support.nwb")
 
 
 class TestRateMapTableRoundTrip1D(TestCase):

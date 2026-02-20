@@ -109,6 +109,25 @@ hd_maps = RateMapTable(
 )
 ```
 
+### Time support
+
+Link the rate maps to the time intervals over which they were computed:
+
+```python
+from pynwb.epoch import TimeIntervals
+
+# Create intervals for the run epochs used to compute rate maps
+time_support = TimeIntervals(name="time_support", description="run epochs")
+time_support.add_interval(start_time=0.0, stop_time=120.0)
+time_support.add_interval(start_time=200.0, stop_time=350.0)
+
+module.add(time_support)
+
+rate_maps.time_support = time_support
+```
+
+This also works with `nwbfile.trials`, `nwbfile.epochs`, or any `TimeIntervals` table.
+
 ### Multiple conditions
 
 Create separate tables for each condition:
@@ -142,6 +161,7 @@ right_trials = RateMapTable(
 | `occupancy_map` | VectorData (float64) | No | Time spent per bin in seconds |
 | `spike_count_map` | VectorData (float64) | No | Spike count per bin |
 | `source_timeseries` | link to TimeSeries | No | Source behavioral timeseries |
+| `time_support` | link to TimeIntervals | No | Time intervals over which rate maps were computed |
 
 ---
 This extension was created using [ndx-template](https://github.com/nwb-extensions/ndx-template).

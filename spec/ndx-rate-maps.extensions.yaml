@@ -57,3 +57,8 @@ groups:
     target_type: TimeSeries
     doc: Source behavioral timeseries (e.g., position data)
     quantity: '?'
+  - name: time_support
+    target_type: TimeIntervals
+    doc: Time intervals over which these rate maps were computed (e.g., trials, epochs,
+      or custom intervals)
+    quantity: '?'

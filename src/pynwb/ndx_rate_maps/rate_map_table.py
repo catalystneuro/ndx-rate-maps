@@ -1,4 +1,5 @@
 from pynwb import register_class, TimeSeries
+from pynwb.epoch import TimeIntervals
 from hdmf.common import DynamicTable, DynamicTableRegion, VectorData, ElementIdentifiers
 from hdmf.utils import docval, popargs
 
@@ -19,6 +20,7 @@ class RateMapTable(DynamicTable):
         "smoothing_kernel",
         "smoothing_kernel_width",
         {"name": "source_timeseries", "required_name": "source_timeseries"},
+        {"name": "time_support", "required_name": "time_support"},
     )
 
     @docval(
@@ -67,6 +69,12 @@ class RateMapTable(DynamicTable):
             "default": None,
         },
         {
+            "name": "time_support",
+            "type": TimeIntervals,
+            "doc": "Time intervals over which these rate maps were computed",
+            "default": None,
+        },
+        {
             "name": "smoothing_kernel",
             "type": str,
             "doc": "Type of smoothing kernel applied (e.g., 'gaussian', 'box')",
@@ -103,7 +111,7 @@ class RateMapTable(DynamicTable):
         smoothing_kernel, smoothing_kernel_width = popargs(
             "smoothing_kernel", "smoothing_kernel_width", kwargs
         )
-        source_timeseries = popargs("source_timeseries", kwargs)
+        source_timeseries, time_support = popargs("source_timeseries", "time_support", kwargs)
         units, rate_map = popargs("units", "rate_map", kwargs)
         occupancy_map, spike_count_map = popargs("occupancy_map", "spike_count_map", kwargs)
         kwargs.pop("unit_of_measurement", None)  # fixed value from spec, discard
@@ -137,6 +145,7 @@ class RateMapTable(DynamicTable):
         self.smoothing_kernel = smoothing_kernel
         self.smoothing_kernel_width = smoothing_kernel_width
         self.source_timeseries = source_timeseries
+        self.time_support = time_support
 
     @property
     def unit_of_measurement(self):
