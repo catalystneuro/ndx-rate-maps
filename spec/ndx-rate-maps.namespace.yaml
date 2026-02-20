@@ -1,0 +1,11 @@
+namespaces:
+- author:
+  - Ben Dichter
+  contact:
+  - ben.dichter@catalystneuro.com
+  doc: NWB extension for storing rate maps (spatial firing rate maps, tuning curves)
+  name: ndx-rate-maps
+  schema:
+  - namespace: core
+  - source: ndx-rate-maps.extensions.yaml
+  version: 0.1.0
