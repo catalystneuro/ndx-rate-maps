@@ -110,15 +110,31 @@ def main():
                 name="rate_map",
                 neurodata_type_inc="VectorData",
                 dtype="float64",
+                dims=[
+                    ("num_units", "num_bins_dim0"),
+                    ("num_units", "num_bins_dim0", "num_bins_dim1"),
+                ],
+                shape=[
+                    (None, None),
+                    (None, None, None),
+                ],
                 doc=(
-                    "Rate map values in Hz. Shape per row is (num_bins,) for 1D maps "
-                    "or (num_bins_x, num_bins_y) for 2D maps."
+                    "Rate map values in Hz. Shape is (num_units, num_bins_dim0) for 1D maps "
+                    "or (num_units, num_bins_dim0, num_bins_dim1) for 2D maps."
                 ),
             ),
             NWBDatasetSpec(
                 name="occupancy_map",
                 neurodata_type_inc="VectorData",
                 dtype="float64",
+                dims=[
+                    ("num_units", "num_bins_dim0"),
+                    ("num_units", "num_bins_dim0", "num_bins_dim1"),
+                ],
+                shape=[
+                    (None, None),
+                    (None, None, None),
+                ],
                 doc="Time spent per bin in seconds. Same shape as rate_map.",
                 quantity="?",
             ),
@@ -126,6 +142,14 @@ def main():
                 name="spike_count_map",
                 neurodata_type_inc="VectorData",
                 dtype="float64",
+                dims=[
+                    ("num_units", "num_bins_dim0"),
+                    ("num_units", "num_bins_dim0", "num_bins_dim1"),
+                ],
+                shape=[
+                    (None, None),
+                    (None, None, None),
+                ],
                 doc="Number of spikes per bin. Same shape as rate_map.",
                 quantity="?",
             ),
