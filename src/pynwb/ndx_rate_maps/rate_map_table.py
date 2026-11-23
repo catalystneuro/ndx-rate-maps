@@ -1,7 +1,7 @@
 from pynwb import register_class, TimeSeries
 from pynwb.epoch import TimeIntervals
-from hdmf.common import DynamicTable, DynamicTableRegion, VectorData, ElementIdentifiers
-from hdmf.utils import docval, popargs
+from hdmf.common import DynamicTable, DynamicTableRegion, VectorData
+from hdmf.utils import docval, get_docval, popargs
 
 NS = "ndx-rate-maps"
 
@@ -114,24 +114,7 @@ class RateMapTable(DynamicTable):
             "doc": "Width/sigma of the smoothing kernel, in the same units as bin_edges",
             "default": None,
         },
-        {
-            "name": "id",
-            "type": ("array_data", ElementIdentifiers),
-            "doc": "Row IDs",
-            "default": None,
-        },
-        {
-            "name": "columns",
-            "type": (list, tuple),
-            "doc": "Columns for this table (used during read)",
-            "default": None,
-        },
-        {
-            "name": "colnames",
-            "type": ("scalar_data", list, tuple, "array_data"),
-            "doc": "Column names (used during read)",
-            "default": None,
-        },
+        *[arg for arg in get_docval(DynamicTable.__init__) if arg["name"] not in ("name", "description")],
         allow_extra=True,
     )
     def __init__(self, **kwargs):
