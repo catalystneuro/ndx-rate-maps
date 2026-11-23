@@ -1,3 +1,4 @@
+import unittest
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -7,6 +8,7 @@ from pynwb import NWBFile, NWBHDF5IO
 from pynwb.behavior import Position, SpatialSeries
 from pynwb.epoch import TimeIntervals
 from pynwb.testing import TestCase
+import hdmf.common
 from hdmf.common import DynamicTableRegion, VectorData
 
 from ndx_rate_maps import RateMapTable
@@ -343,3 +345,35 @@ class TestRateMapTableRoundTrip1D(TestCase):
 
         import os
         os.remove("test_1d.nwb")
+
+
+@unittest.skipIf(not hasattr(hdmf.common, "MeaningsTable"), "this version of hdmf does not support MeaningsTable")
+class TestRateMapTableMeaningsTables(TestCase):
+    """Test that a MeaningsTable on a RateMapTable column survives a round trip."""
+
+    def test_roundtrip_meanings_tables(self):
+        nwbfile = _make_nwbfile()
+        table = _make_rate_map_table_1d(nwbfile)
+        table.add_column(name="cell_type", description="putative cell type", data=["hd", "hd", "other"])
+        meanings = hdmf.common.MeaningsTable(target=table["cell_type"])
+        meanings.add_row(value="hd", meaning="head direction cell")
+        meanings.add_row(value="other", meaning="not a head direction cell")
+        table.add_meanings_table(meanings)
+
+        module = nwbfile.create_processing_module("behavior", "Behavioral data")
+        module.add(table)
+
+        with NWBHDF5IO("test_meanings.nwb", "w") as io:
+            io.write(nwbfile)
+
+        with NWBHDF5IO("test_meanings.nwb", "r") as io:
+            read_table = io.read().processing["behavior"]["hd_tuning_curves"]
+
+            assert isinstance(read_table, RateMapTable)
+            read_meanings = read_table.get_meanings_for_column("cell_type")
+            assert read_meanings is not None
+            assert list(read_meanings["value"].data[:]) == ["hd", "other"]
+            assert list(read_meanings["meaning"].data[:]) == ["head direction cell", "not a head direction cell"]
+
+        import os
+        os.remove("test_meanings.nwb")
